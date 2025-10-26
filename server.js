@@ -1,36 +1,43 @@
-const express = require("express");
-const axios = require("axios");
-require("dotenv").config();
+// server.js
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import OpenAI from "openai";
+import path from "path";
+import { fileURLToPath } from "url";
 
+dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 10000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // Serves your frontend files
+app.use(express.static(__dirname)); // serve your HTML/CSS/JS
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
   try {
-    const response = await axios.post(
-      "https://api.openai.com/v1/completions",
-      {
-        model: "gpt-4o-mini", // lightweight + fast
-        prompt: userMessage,
-        max_tokens: 150,
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    res.json({ reply: response.data.choices[0].text.trim() });
+    const userMessage = req.body.message;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: userMessage }],
+    });
+
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
   } catch (error) {
-    console.error(error.response?.data || error.message);
-    res.status(500).send("Error communicating with OpenAI API");
+    console.error("Error from OpenAI:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
+app.listen(PORT, () =>
+  console.log(`✅ Arogya AI server running on port ${PORT}`)
+);
