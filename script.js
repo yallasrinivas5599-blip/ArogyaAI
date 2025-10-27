@@ -427,20 +427,23 @@ function checkReminders(){
 
 /* ---------- UI wiring ---------- */
 function populateTablets(){
-  if(!tabletList) return;
-  tabletList.innerHTML = '';
+  const list = document.getElementById('tabletList');
+  list.innerHTML = '';
   TABLETS.forEach(t => {
-    const el = document.createElement('div'); el.className='chip';
-    el.innerHTML = `<div><div class="name">${escapeHtml(t.name)}</div><div class="meta">${escapeHtml(t.dose)} • ${escapeHtml(t.note)}</div></div><div><button class="btn ghost askMed">Ask</button></div>`;
-    el.querySelector('.askMed').addEventListener('click', ()=>{
-      userInput.value = `Tell me about ${t.name} ${t.dose} — uses, side effects, how to take it.`;
-      userInput.focus();
-      sendBtn.click();
+    const div = document.createElement('div');
+    div.className = 'tablet';
+    div.innerHTML = `
+      <strong>${t.name}</strong>
+      <p>${t.dose} · ${t.usage}</p>
+      <button class="ask-btn">Ask</button>
+    `;
+    div.querySelector('.ask-btn').addEventListener('click', () => {
+      userInput.value = `What is ${t.name} used for?`;
+      sendMessage();
     });
-    tabletList.appendChild(el);
+    list.appendChild(div);
   });
 }
-
 /* Hook side buttons */
 document.querySelectorAll('.side-btn').forEach(btn=>{
   btn.addEventListener('click', (e)=>{
@@ -505,14 +508,29 @@ clearDataBtn.addEventListener('click', () => {
   }
 });
 
+// New Chat button
+const newChatBtn = document.createElement('button');
+newChatBtn.textContent = "🗨️ New Chat";
+newChatBtn.className = "btn ghost";
+document.querySelector('.sidebar-footer').prepend(newChatBtn);
+
+newChatBtn.addEventListener('click', () => {
+  if (confirm('Start a new conversation? This will clear current chat.')) {
+    localStorage.removeItem(STORAGE.CHAT);
+    document.getElementById('chatArea').innerHTML = '';
+    appendMessage('bot', '👩‍⚕️ New chat started! How can I assist you today?');
+  }
+});
+
 /* ---------- Startup (restore history + reminders) ---------- */
 (function init(){
   populateTablets();
+const history = load(STORAGE.CHAT, []);
+if (history.length) {
+  history.forEach(h => appendMessage(h.who, h.text, new Date(h.ts).toLocaleString()));
+} else {
   appendMessage('bot', '👩‍⚕️ Welcome to Arogya AI — your personal health assistant.');
-  const history = load(STORAGE.CHAT, []);
-  if(history.length) history.forEach(h => appendMessage(h.who, h.text, new Date(h.ts).toLocaleString()));
-  checkReminders();
-})();
+}
 
 // Floating Tablet Popup
 const tabletBtn = document.getElementById('tabletBtn');
