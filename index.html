@@ -1,75 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Arogya AI — Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arogya AI — Health Assistant</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="logo">🧠</div>
-        <div>
-          <h1>Arogya AI</h1>
-          <p class="muted">Smart health companion</p>
-        </div>
-      </div>
-
-      <nav class="features">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="logo">🧠 Arogya AI</div>
+      <nav>
         <button class="side-btn" data-panel="water">💧 Water Tracker</button>
         <button class="side-btn" data-panel="bmi">🧮 BMI Calculator</button>
         <button class="side-btn" data-panel="reminders">💊 Medicine Reminders</button>
         <button class="side-btn" data-panel="heart">❤️ Heart Logger</button>
         <button class="side-btn" data-panel="sleep">🌙 Sleep Tracker</button>
-        <button class="side-btn" data-panel="tips">🍎 Daily Tips</button>
-        <button class="side-btn" data-panel="report">📅 Daily Report</button>
+        <button class="side-btn" data-panel="tips">💡 Health Tips</button>
+        <button class="side-btn" data-panel="report">📋 Daily Report</button>
         <button class="side-btn" data-panel="symptom">🩺 Symptom Checker</button>
-        <button class="side-btn" data-panel="relax">🧘 Relax Mode</button>
-        <button class="side-btn" data-panel="quotes">✨ Quotes</button>
+        <button class="side-btn" data-panel="relax">🌤 Relax Mode</button>
+        <button class="side-btn" data-panel="quotes">✨ Motivation</button>
       </nav>
-
-      <section class="tablets">
-        <h3>Tablet Suggestions</h3>
-        <div id="tabletList" class="chips"></div>
-        <p class="hint muted">Tap Ask to auto-compose a question about a med.</p>
-      </section>
-
-      <div class="sidebar-footer">
-        <button id="clearData" class="btn ghost">Clear All Data</button>
-        <div class="muted">Built with ❤️ by Arjun</div>
-      </div>
+      <button id="clearData" class="clear">Clear Data</button>
     </aside>
 
+    <!-- Main Chat Area -->
     <main class="main">
-      <header class="topbar">
-        <div class="left">
-          <button id="toggleSidebar" class="icon-btn">☰</button>
-          <div class="title">Arogya AI</div>
-        </div>
-        <div class="right">
-          <div id="status" class="status">Status: Local AI</div>
-        </div>
+      <header>
+        <button id="toggleSidebar" class="menu-btn">☰</button>
+        <h1>Arogya AI Chat</h1>
+        <div id="status" class="status">Initializing...</div>
       </header>
 
-      <section id="chatArea" class="chat-area" aria-live="polite">
-        <!-- messages -->
-      </section>
+      <section id="chatArea" class="chat-area"></section>
 
-      <footer class="composer">
-        <textarea id="userInput" placeholder="Describe your symptom, ask about a medicine or say 'help'..." rows="1"></textarea>
-        <div class="composer-actions">
-          <button id="sendBtn" class="send">Send</button>
-        </div>
+      <footer class="chat-input">
+        <textarea id="userInput" placeholder="Type your health query..."></textarea>
+        <button id="sendBtn" class="send-btn">Send</button>
       </footer>
     </main>
   </div>
 
-  <!-- Panels (modals/panels) -->
-  <div id="panelOverlay" class="overlay hidden" role="dialog" aria-hidden="true">
-    <div class="panel" id="panelContent">
-      <button id="closePanel" class="close">✕</button>
+  <!-- Tablet Quick Access -->
+  <section id="tabletList" class="tablet-list"></section>
+
+  <!-- Panels Overlay -->
+  <div id="panelOverlay" class="panel-overlay hidden">
+    <div class="panel">
+      <button id="closePanel" class="close-btn">×</button>
       <div id="panelInner"></div>
     </div>
   </div>
