@@ -305,3 +305,16 @@ header h1 {
 .tablet-item button:hover {
   background: #10ac84;
 }
+
+.sidebar-footer .btn {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.btn.ghost:hover {
+  background: #1e293b;
+  color: #67e8f9;
+}
