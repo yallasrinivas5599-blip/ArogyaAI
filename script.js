@@ -217,7 +217,18 @@ function renderBMIPanel(){
 /* Medicine reminders */
 function renderRemindersPanel(){
   const meds = load(STORAGE.MEDS, []);
-  let listHtml = meds.length ? meds.map((m,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:6px"><div><strong>${escapeHtml(m.name)}</strong><div class="meta">${escapeHtml(m.time)}</div></div><div><button data-del="${i}" class="btn ghost">Del</button></div></div>`).join('') : '<div class="muted">No reminders</div>';
+  let listHtml = '';
+  if(meds.length){
+    listHtml = meds.map((m,i) => `
+      <div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:6px">
+        <div><strong>${escapeHtml(m.name)}</strong><div class="meta">${escapeHtml(m.time)}</div></div>
+        <div><button data-del="${i}" class="btn ghost delMed">Delete</button></div>
+      </div>
+    `).join('');
+  } else {
+    listHtml = '<div class="hint">No reminders added</div>';
+  }
+
   const html = `
     <h2>Medicine Reminders</h2>
     <div style="display:flex;gap:8px;margin:8px 0"><input id="medName" placeholder="Medicine name"/><input id="medTime" type="time"/></div>
@@ -229,7 +240,9 @@ function renderRemindersPanel(){
     const name = document.getElementById('medName').value.trim();
     const time = document.getElementById('medTime').value;
     if(!name || !time) return alert('Provide name and time');
-    const arr = load(STORAGE.MEDS, []); arr.push({name, time}); save(STORAGE.MEDS, arr);
+    const arr = load(STORAGE.MEDS, []);
+    arr.push({name, time});
+    save(STORAGE.MEDS, arr);
     appendMessage('bot', `Added ${name} at ${time} — I'll remind you while the app is open.`);
     renderRemindersPanel(); // re-open to refresh
   });
@@ -238,8 +251,8 @@ function renderRemindersPanel(){
     save(STORAGE.MEDS, []); renderRemindersPanel();
   });
   // delete buttons
-  panelInner.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', (e)=> {
-    const i = Number(e.target.dataset.del);
+  panelInner.querySelectorAll('.delMed').forEach(btn => btn.addEventListener('click', (e)=> {
+    const i = Number(e.currentTarget.dataset.del);
     const arr = load(STORAGE.MEDS, []); arr.splice(i,1); save(STORAGE.MEDS,arr); renderRemindersPanel();
   }));
 }
@@ -396,19 +409,25 @@ function checkReminders(){
   const now = new Date();
   const hh = String(now.getHours()).padStart(2,'0');
   const mm = String(now.getMinutes()).padStart(2,'0');
+  const today = now.toDateString();
+
+  let changed = false;
   meds.forEach(m => {
-    if(m.time === `${hh}:${mm}` && !m._notifiedToday){
+    if(m.time === `${hh}:${mm}` && m._notifiedToday !== today){
       appendMessage('bot', `Reminder: take ${m.name} (${m.time})`);
-      // mark notified for today
-      m._notifiedToday = new Date().toDateString();
+      // mark notified for today and persist
+      m._notifiedToday = today;
+      changed = true;
     }
   });
-  // reset _notifiedToday at midnight
+  if(changed) save(STORAGE.MEDS, meds);
+  // check again in ~30s
   setTimeout(checkReminders, 30_000);
 }
 
 /* ---------- UI wiring ---------- */
 function populateTablets(){
+  if(!tabletList) return;
   tabletList.innerHTML = '';
   TABLETS.forEach(t => {
     const el = document.createElement('div'); el.className='chip';
@@ -460,36 +479,25 @@ function bootstrap(){
   statusEl.textContent = 'Ready (static AI)';
 }
 bootstrap();
-if(panel==='bmi') renderBMIPanel();
-    if(panel==='meds') renderRemindersPanel();
-    if(panel==='heart') renderHeartPanel();
-    if(panel==='sleep') renderSleepPanel();
-    if(panel==='tips') renderTipsPanel();
-    if(panel==='report') renderReportPanel();
-    if(panel==='symptom') renderSymptomPanel();
-    if(panel==='relax') renderRelaxPanel();
-    if(panel==='quotes') renderQuotesPanel();
-  });
-});
 
-/* Sidebar toggle */
+/* Sidebar toggle (optional alternate open style) */
 toggleSidebar.addEventListener('click', () => {
   sidebar.classList.toggle('open');
 });
 
-/* Panel close */
+/* Panel close (duplicate-safe) */
 closePanel.addEventListener('click', closePanelFn);
 panelOverlay.addEventListener('click', (e) => {
   if(e.target.id === 'panelOverlay') closePanelFn();
 });
 
-/* Send message */
+/* Send message (duplicate-safe) */
 sendBtn.addEventListener('click', sendMessage);
 userInput.addEventListener('keypress', (e) => {
-  if(e.key === 'Enter') sendMessage();
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
-/* Clear data */
+/* Clear data (duplicate-safe) */
 clearDataBtn.addEventListener('click', () => {
   if(confirm('Clear all local data (chat, logs, reminders)?')){
     Object.values(STORAGE).forEach(k => localStorage.removeItem(k));
@@ -497,7 +505,7 @@ clearDataBtn.addEventListener('click', () => {
   }
 });
 
-/* ---------- Startup ---------- */
+/* ---------- Startup (restore history + reminders) ---------- */
 (function init(){
   populateTablets();
   appendMessage('bot', '👩‍⚕️ Welcome to Arogya AI — your personal health assistant.');
@@ -505,6 +513,7 @@ clearDataBtn.addEventListener('click', () => {
   if(history.length) history.forEach(h => appendMessage(h.who, h.text, new Date(h.ts).toLocaleString()));
   checkReminders();
 })();
+
 // Floating Tablet Popup
 const tabletBtn = document.getElementById('tabletBtn');
 
@@ -520,6 +529,8 @@ tabletPanel.innerHTML = `
 `;
 document.body.appendChild(tabletPanel);
 
-tabletBtn.addEventListener('click', () => {
-  tabletPanel.classList.toggle('active');
-});
+if(tabletBtn){
+  tabletBtn.addEventListener('click', () => {
+    tabletPanel.classList.toggle('active');
+  });
+                                                       }
