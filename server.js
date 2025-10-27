@@ -1,43 +1,46 @@
+// server.js
 import express from "express";
-import dotenv from "dotenv";
-import OpenAI from "openai";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
+import bodyParser from "body-parser";
+import OpenAI from "openai";
 
-dotenv.config();
 const app = express();
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+app.use(cors());
+app.use(bodyParser.json());
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.use(cors());
-app.use(express.json());
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(__dirname));
-
 app.post("/chat", async (req, res) => {
-  try {
-    const { message } = req.body;
+  const userMessage = req.body.message;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: message }]
+  try {
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `
+You are Arogya AI — a caring, expert health assistant. 
+You provide advice on daily health issues, explain causes, suggest remedies, 
+and remind users that this is not a substitute for a doctor. 
+Keep answers short, clear, and human-like. 
+When users mention symptoms like fever, neck pain, or cough — 
+give medical guidance, possible causes, and home care tips. 
+End responses with empathy (like "Take care 💚").`,
+        },
+        { role: "user", content: userMessage },
+      ],
     });
 
-    res.json({ reply: response.choices[0].message.content });
+    const botReply = completion.choices[0].message.content;
+    res.json({ reply: botReply });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "AI response failed" });
+    console.error("Error:", error);
+    res.status(500).json({ reply: "😞 Sorry, I'm facing a small issue. Try again later." });
   }
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
