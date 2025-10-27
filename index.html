@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Arogya AI — Live</title>
+  <title>Arogya AI — Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,50 +13,65 @@
         <div class="logo">🧠</div>
         <div>
           <h1>Arogya AI</h1>
-          <p class="muted">Your smart health assistant</p>
+          <p class="muted">Smart health companion</p>
         </div>
       </div>
 
-      <section class="section">
+      <nav class="features">
+        <button class="side-btn" data-panel="water">💧 Water Tracker</button>
+        <button class="side-btn" data-panel="bmi">🧮 BMI Calculator</button>
+        <button class="side-btn" data-panel="reminders">💊 Medicine Reminders</button>
+        <button class="side-btn" data-panel="heart">❤️ Heart Logger</button>
+        <button class="side-btn" data-panel="sleep">🌙 Sleep Tracker</button>
+        <button class="side-btn" data-panel="tips">🍎 Daily Tips</button>
+        <button class="side-btn" data-panel="report">📅 Daily Report</button>
+        <button class="side-btn" data-panel="symptom">🩺 Symptom Checker</button>
+        <button class="side-btn" data-panel="relax">🧘 Relax Mode</button>
+        <button class="side-btn" data-panel="quotes">✨ Quotes</button>
+      </nav>
+
+      <section class="tablets">
         <h3>Tablet Suggestions</h3>
-        <div id="tabletList" class="chips">
-          <!-- chips inserted by script -->
-        </div>
-        <div class="hint muted">Tap a medicine to ask the assistant about it.</div>
+        <div id="tabletList" class="chips"></div>
+        <p class="hint muted">Tap Ask to auto-compose a question about a med.</p>
       </section>
 
-      <section class="section">
-        <h3>Quick Actions</h3>
-        <button class="btn" id="clearChatBtn">Clear Chat</button>
-        <button class="btn ghost" id="exportBtn">Export Chat</button>
-      </section>
-
-      <footer class="sidebar-footer muted">Built with ❤️ • Arjun</footer>
+      <div class="sidebar-footer">
+        <button id="clearData" class="btn ghost">Clear All Data</button>
+        <div class="muted">Built with ❤️ by Arjun</div>
+      </div>
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <button id="toggleSidebar" class="icon-btn">☰</button>
-        <div class="title">
-          <strong>Arogya AI</strong>
+        <div class="left">
+          <button id="toggleSidebar" class="icon-btn">☰</button>
+          <div class="title">Arogya AI</div>
         </div>
-        <div class="status" id="status">Offline</div>
+        <div class="right">
+          <div id="status" class="status">Status: Local AI</div>
+        </div>
       </header>
 
       <section id="chatArea" class="chat-area" aria-live="polite">
-        <!-- messages appended here -->
+        <!-- messages -->
       </section>
 
       <footer class="composer">
-        <div class="composer-left">
-          <input id="userInput" placeholder="Describe your symptom or ask a health question..." autocomplete="off" />
-        </div>
-
-        <div class="composer-right">
+        <textarea id="userInput" placeholder="Describe your symptom, ask about a medicine or say 'help'..." rows="1"></textarea>
+        <div class="composer-actions">
           <button id="sendBtn" class="send">Send</button>
         </div>
       </footer>
     </main>
+  </div>
+
+  <!-- Panels (modals/panels) -->
+  <div id="panelOverlay" class="overlay hidden" role="dialog" aria-hidden="true">
+    <div class="panel" id="panelContent">
+      <button id="closePanel" class="close">✕</button>
+      <div id="panelInner"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>
