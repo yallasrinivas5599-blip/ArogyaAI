@@ -460,3 +460,66 @@ function bootstrap(){
   statusEl.textContent = 'Ready (static AI)';
 }
 bootstrap();
+if(panel==='bmi') renderBMIPanel();
+    if(panel==='meds') renderRemindersPanel();
+    if(panel==='heart') renderHeartPanel();
+    if(panel==='sleep') renderSleepPanel();
+    if(panel==='tips') renderTipsPanel();
+    if(panel==='report') renderReportPanel();
+    if(panel==='symptom') renderSymptomPanel();
+    if(panel==='relax') renderRelaxPanel();
+    if(panel==='quotes') renderQuotesPanel();
+  });
+});
+
+/* Sidebar toggle */
+toggleSidebar.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+
+/* Panel close */
+closePanel.addEventListener('click', closePanelFn);
+panelOverlay.addEventListener('click', (e) => {
+  if(e.target.id === 'panelOverlay') closePanelFn();
+});
+
+/* Send message */
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') sendMessage();
+});
+
+/* Clear data */
+clearDataBtn.addEventListener('click', () => {
+  if(confirm('Clear all local data (chat, logs, reminders)?')){
+    Object.values(STORAGE).forEach(k => localStorage.removeItem(k));
+    appendMessage('bot', 'All data cleared.');
+  }
+});
+
+/* ---------- Startup ---------- */
+(function init(){
+  populateTablets();
+  appendMessage('bot', '👩‍⚕️ Welcome to Arogya AI — your personal health assistant.');
+  const history = load(STORAGE.CHAT, []);
+  if(history.length) history.forEach(h => appendMessage(h.who, h.text, new Date(h.ts).toLocaleString()));
+  checkReminders();
+})();
+// Floating Tablet Popup
+const tabletBtn = document.getElementById('tabletBtn');
+
+const tabletPanel = document.createElement('div');
+tabletPanel.id = 'tabletPanel';
+tabletPanel.innerHTML = `
+  <h3>💊 Tablet Suggestions</h3>
+  <div class="tablet-item"><strong>Paracetamol</strong> 500mg • Fever / pain <button>Ask</button></div>
+  <div class="tablet-item"><strong>Ibuprofen</strong> 200mg • Pain / inflammation <button>Ask</button></div>
+  <div class="tablet-item"><strong>Cetirizine</strong> 10mg • Allergies <button>Ask</button></div>
+  <div class="tablet-item"><strong>Aspirin</strong> 75–325mg • Blood thinner <button>Ask</button></div>
+  <div class="tablet-item"><strong>Amoxicillin</strong> 500mg • Antibiotic <button>Ask</button></div>
+`;
+document.body.appendChild(tabletPanel);
+
+tabletBtn.addEventListener('click', () => {
+  tabletPanel.classList.toggle('active');
+});
