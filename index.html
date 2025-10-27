@@ -1,38 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arogya AI v2 — Chat</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arogya AI — Live</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
-    <header class="topbar">
-      <h1 class="logo">🧠 Arogya AI</h1>
-      <button id="menuBtn" class="menu-btn">☰</button>
-    </header>
-
-    <main id="chatContainer" class="chat-container">
-      <div class="message bot">
-        <div class="avatar">🤖</div>
-        <div class="bubble">Hello Arjun 👋 I'm Arogya AI — your smart health assistant.</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">🧠</div>
+        <div>
+          <h1>Arogya AI</h1>
+          <p class="muted">Your smart health assistant</p>
+        </div>
       </div>
+
+      <section class="section">
+        <h3>Tablet Suggestions</h3>
+        <div id="tabletList" class="chips">
+          <!-- chips inserted by script -->
+        </div>
+        <div class="hint muted">Tap a medicine to ask the assistant about it.</div>
+      </section>
+
+      <section class="section">
+        <h3>Quick Actions</h3>
+        <button class="btn" id="clearChatBtn">Clear Chat</button>
+        <button class="btn ghost" id="exportBtn">Export Chat</button>
+      </section>
+
+      <footer class="sidebar-footer muted">Built with ❤️ • Arjun</footer>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="toggleSidebar" class="icon-btn">☰</button>
+        <div class="title">
+          <strong>Arogya AI</strong>
+        </div>
+        <div class="status" id="status">Offline</div>
+      </header>
+
+      <section id="chatArea" class="chat-area" aria-live="polite">
+        <!-- messages appended here -->
+      </section>
+
+      <footer class="composer">
+        <div class="composer-left">
+          <input id="userInput" placeholder="Describe your symptom or ask a health question..." autocomplete="off" />
+        </div>
+
+        <div class="composer-right">
+          <button id="sendBtn" class="send">Send</button>
+        </div>
+      </footer>
     </main>
-
-    <footer class="input-bar">
-      <input type="text" id="userInput" placeholder="Message Arogya AI..." autocomplete="off">
-      <button id="sendBtn">➤</button>
-    </footer>
-
-    <nav id="sideNav" class="side-nav">
-      <h2>Features Coming Soon</h2>
-      <ul>
-        <li>💊 Medicine Scheduler</li>
-        <li>📝 Notes & To-Do</li>
-        <li>📈 Health Dashboard</li>
-      </ul>
-    </nav>
   </div>
 
   <script src="script.js"></script>
