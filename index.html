@@ -28,20 +28,17 @@
         <button class="side-btn" data-panel="symptom">🩺 Symptom Checker</button>
         <button class="side-btn" data-panel="relax">🧘 Relax Mode</button>
         <button class="side-btn" data-panel="quotes">✨ Motivation</button>
-        <button class="side-btn" id="aiMirrorBtn">🪞 AI Mirror</button>
-        <button class="side-btn" id="quizBtn">❓ Quick Quiz</button>
-        <button class="side-btn" id="gameBtn">🎮 Mini Game</button>
       </nav>
 
-      <section class="tablets" aria-hidden="true">
+      <section class="tablets">
         <h3>Tablet Suggestions</h3>
         <div id="tabletList" class="chips"></div>
         <p class="hint muted">Tap Ask to auto-compose a question about a med.</p>
       </section>
 
       <div class="sidebar-footer">
+        <button id="clearData" class="btn ghost">Clear All Data</button>
         <div class="muted">Built with ❤️ by Arjun</div>
-        <button id="clearData" class="btn ghost">Clear Chat</button>
       </div>
     </aside>
 
@@ -56,11 +53,10 @@
         </div>
       </header>
 
-      <section id="chatArea" class="chat-area" aria-live="polite">
-        <!-- messages appear here -->
-      </section>
+      <section id="chatArea" class="chat-area" aria-live="polite"></section>
 
       <footer class="composer">
+        <button id="newChatBtn" class="btn tiny ghost">New Chat</button>
         <textarea id="userInput" placeholder="Describe your symptom, ask about a medicine or say 'help'..." rows="1"></textarea>
         <div class="composer-actions">
           <button id="sendBtn" class="send">Send</button>
@@ -77,8 +73,18 @@
     </div>
   </div>
 
-  <!-- tablet floating & quick actions created by script.js dynamically -->
+  <!-- Radial floating menu -->
+  <div id="floatingWrapper">
+    <button id="floatingMain" class="floating-main">＋</button>
+    <div id="floatingMenu" class="floating-menu">
+      <button id="floatChat" class="float-btn" title="Chat">💬</button>
+      <button id="floatTablets" class="float-btn" title="Tablets">💊</button>
+      <button id="floatQuiz" class="float-btn" title="Quiz">🧠</button>
+      <button id="floatGame" class="float-btn" title="Game">🎮</button>
+      <button id="floatMirror" class="float-btn" title="Mirror">🪞</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
-  </html>
+</html>
